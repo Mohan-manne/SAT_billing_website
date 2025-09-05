@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Welcome - Sri Anjaneya Traders</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- PWA Support -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#124170">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SRI ANJANEYA TRADERS">
+<link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/service-worker.js")
+      .then(() => console.log("✅ Service Worker registered"))
+      .catch(err => console.log("❌ Service Worker failed", err));
+  }
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        font-family: 'Montserrat', sans-serif;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #124170, #26667F);
+        overflow: hidden;
+        position: relative;
+    }
+    body::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(270deg, #124170, #26667F, #67C090);
+        background-size: 600% 600%;
+        animation: gradientBG 20s ease infinite;
+        z-index: -2;
+    }
+    @keyframes gradientBG {
+        0% {background-position: 0% 50%;}
+        50% {background-position: 100% 50%;}
+        100% {background-position: 0% 50%;}
+    }
+    body::after {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(255,255,255,0.1);
+        z-index: -1;
+    }
+    .login-card {
+        background: #ffffff;
+        padding: 40px 35px;
+        border-radius: 25px;
+        width: 380px;
+        max-width: 90%;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+        text-align: center;
+        animation: fadeIn 1s ease-in-out;
+    }
+    @keyframes fadeIn {
+        from {opacity: 0; transform: translateY(30px);}
+        to {opacity: 1; transform: translateY(0);}
+    }
+    h1.logo { color: #26667F; font-size: 28px; letter-spacing: 1px; font-weight: 700; margin-bottom: 10px; }
+    .tagline { font-size: 14px; color: #124170; margin-bottom: 20px; font-style: italic; }
+    input[type="text"], input[type="password"] {
+        width: 100%;
+        padding: 12px 15px;
+        margin: 10px 0;
+        border: 2px solid #67C090;
+        border-radius: 8px;
+        outline: none;
+        font-size: 15px;
+        transition: all 0.3s ease;
+    }
+    input:focus { border-color: #26667F; box-shadow: 0 0 10px rgba(38,102,127,0.4); }
+    button {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #67C090, #26667F);
+        color: #fff;
+        font-weight: bold;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        margin-top: 15px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    button:hover { background: linear-gradient(135deg, #26667F, #124170); transform: scale(1.05); box-shadow: 0 0 15px rgba(38,102,127,0.5); }
+    .extra-links { margin-top: 20px; font-size: 14px; }
+    .extra-links a { color: #124170; text-decoration: none; margin: 0 8px; font-weight: 500; transition: color 0.3s; }
+    .extra-links a:hover { color: #67C090; }
+    .footer { position: fixed; bottom: 12px; right: 18px; font-size: 16px; color: #124170; opacity: 0.9; font-style: italic; }
+    .footer:hover { color: #e2e9e5; text-shadow: 0 0 4px #124170; }
+    .flash-message { padding: 10px 12px; margin-bottom: 10px; border-radius: 6px; font-size: 14px; }
+    .flash-message.error { background: #f8d7da; color: #842029; }
+    .flash-message.success { background: #d1e7dd; color: #0f5132; }
+    @media(max-width: 480px){
+        h1.logo { font-size: 22px; }
+        .tagline { font-size: 12px; }
+        .login-card { padding: 25px 20px; }
+        button { font-size: 15px; }
+    }
+</style>
+</head>
+<body>
+    <div class="login-card">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p class="flash-message {{ category }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <h1 class="logo">SRI ANJANEYA TRADERS</h1>
+        <p class="tagline">Trusted Paddy Traders Since 2015 – Delivering Quality & Reliability</p>
+
+        <form method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+
+        <div class="extra-links">
+            Don't have an account? <a href="/signup">Sign Up</a> <br>
+            <a href="#">About Us</a> | <a href="#">Contact</a> | <a href="#">Help</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        Designed & Developed by <b>Mohan Manne</b>
+    </div>
+</body>
+</html>
