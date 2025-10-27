@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Transportation Bill - {{ bill_no }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: #e6f2f1; /* light teal background */
+    margin: 0;
+    padding: 20px;
+    color: #064635; /* dark teal text */
+    position: relative;
+  }
+
+  /* Watermark */
+  body::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 500px;
+    height: 500px;
+    background: url('/static/logo.png') no-repeat center;
+    background-size: contain;
+    opacity: 0.05;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #ffffff;
+    border: 2px solid #2ca58d; /* teal border */
+    border-radius: 12px;
+    padding: 25px 30px;
+    box-shadow: 0 8px 24px rgba(44, 165, 141, 0.15);
+    position: relative;
+    z-index: 1;
+  }
+
+  .header {
+    text-align: center;
+    border-bottom: 2px solid #1b7a63; /* darker teal */
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+  }
+
+  .header h2 {
+    color: #1b7a63;
+    font-size: 28px;
+    margin: 5px 0;
+    font-weight: 700;
+  }
+
+  .header h3 {
+    color: #d14f4f; /* muted red for GSTIN */
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .header p {
+    font-size: 13px;
+    margin: 3px 0;
+    color: #2f4f4f; /* dark slate gray */
+  }
+
+  .header .phone {
+    color: #1b7a63;
+    font-weight: 600;
+  }
+
+  .section {
+    background: #f0f7f6; /* very light teal */
+    border: 1px solid #a3d2ca; /* light teal border */
+    border-radius: 8px;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+  }
+
+  .section p {
+    margin: 6px 0;
+    font-size: 13px;
+  }
+
+  .bold {
+    font-weight: 600;
+    color: #1b7a63;
+  }
+
+  .uppercase {
+    text-transform: uppercase;
+  }
+
+  .financial-details {
+    background: #d1e7e0; /* pale teal */
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid #7cc0b3; /* medium teal */
+    margin-top: 15px;
+  }
+
+  .financial-details p {
+    margin: 6px 0;
+    padding: 6px 10px;
+    border-radius: 4px;
+    background: #b3d9ce; /* lighter teal */
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px dashed #2ca58d;
+    font-size: 13px;
+    color: #2f4f4f;
+  }
+
+  .footer .bold {
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: #1b7a63;
+  }
+
+  @media print {
+    body {
+      background: #fff;
+      margin: 0;
+    }
+    .container {
+      box-shadow: none;
+      border: none;
+      padding: 10px;
+      margin: 0;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h3>GSTIN: 29AXCPN1581G1ZD</h3>
+      <h2>SRI ANJANEYA TRADERS</h2>
+      <p>
+        Sai Nagar, Main Road, Kembhavi - 585216, Tq/Shorapur, Dist. Yadgir, Karnataka<br />
+        <span class="phone"> 9448247345 / 7019326819</span>
+      </p>
+    </header>
+
+    <section class="section">
+      <p>
+        <span class="bold">Ref:</span> <span class="uppercase">{{ ref }}</span>
+        &nbsp;&nbsp;
+        <span class="bold">Date:</span> {{ date }}
+      </p>
+      <p>
+        <span class="bold">M/s, Sir:</span> <span class="uppercase">{{ ms }}</span>
+      </p>
+      <p>
+        <span class="bold">From:</span> <span class="uppercase">{{ from_location }}</span>
+        &nbsp;&nbsp;
+        <span class="bold">To:</span> <span class="uppercase">{{ to_location }}</span>
+      </p>
+    </section>
+
+    <section class="section">
+      <p>Dear Sir,</p>
+      <p>
+        We are sending here with <span class="bold">{{ bags }}</span> bags of
+        <span class="bold uppercase">{{ rice_type }}</span> rice of
+        <span class="bold">{{ kgs }}</span> Kgs, through Lorry No:
+        <span class="bold uppercase">{{ lorry_no }}</span>.
+      </p>
+      <p>Please take delivery in good condition.</p>
+    </section>
+
+    <section class="financial-details">
+      <p><span class="bold">Lorry Freight Rs.:</span>  {{ lorry_freight }}</p>
+      <p><span class="bold">Less Advance Rs.:</span>  {{ advance }}</p>
+      <p><span class="bold">Amount in Words:</span> <span class="uppercase">{{ freight_in_words }}</span></p>
+      <p><span class="bold">Mobile Number:</span> <span class="uppercase">{{ mobile_no }}</span></p>
+    </section>
+
+    <footer class="footer">
+      <p>
+        Thanking You.<br />
+        Yours Faithfully,<br />
+        <span class="bold">For: SRI ANJANEYA TRADERS</span>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

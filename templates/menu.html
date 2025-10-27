@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Menu - SRI ANJANEYA TRADERS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ✅ PWA Support -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#2e7d32">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SRI ANJANEYA TRADERS">
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: url('https://getwallpapers.com/wallpaper/full/5/f/b/1414888-professional-desktop-wallpaper-1920x1080-for-macbook.jpg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .overlay {
+      width: 100%;
+      min-height: 100vh;
+      background-color: rgba(0, 0, 0, 0.65);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+      box-sizing: border-box;
+    }
+
+    .container {
+      max-width: 950px;
+      width: 100%;
+      background-color: #fff;
+      border-radius: 20px;
+      padding: 40px 25px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+      text-align: center;
+    }
+
+    h2 {
+      color: #2e7d32;
+      font-size: 32px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .welcome {
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 28px;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 22px;
+    }
+
+    .card {
+      background: linear-gradient(145deg, #f9f9f9, #e0f2f1);
+      border-radius: 16px;
+      padding: 22px 14px;
+      text-decoration: none;
+      color: #2e7d32;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      transition: all 0.35s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card:hover {
+      transform: translateY(-6px) scale(1.03);
+      background: linear-gradient(145deg, #c8e6c9, #a5d6a7);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .card img {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 10px;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover img {
+      transform: scale(1.1);
+    }
+
+    .card span {
+      display: block;
+      font-weight: 600;
+      font-size: 15px;
+      margin-top: 5px;
+    }
+
+    .logout {
+      margin-top: 35px;
+    }
+
+    .logout-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #1976d2, #0d47a1);
+      color: white;
+      padding: 12px 22px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: linear-gradient(135deg, #0d47a1, #1565c0);
+      transform: scale(1.05);
+    }
+
+    .logout-btn img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .flash-message {
+      margin-bottom: 15px;
+      padding: 12px 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #fff;
+    }
+
+    .success { background-color: #27ae60; }
+    .error { background-color: #e74c3c; }
+    .warning { background-color: #f39c12; color: #fff; }
+    .info { background-color: #2980b9; }
+
+    /* 📱 Responsive adjustments */
+    @media (max-width: 768px) {
+      h2 { font-size: 26px; }
+      .welcome { font-size: 16px; }
+      .container { padding: 30px 20px; }
+      .card { padding: 18px 12px; }
+      .card img { width: 42px; height: 42px; }
+      .card span { font-size: 14px; }
+    }
+
+    @media (max-width: 480px) {
+      h2 { font-size: 22px; }
+      .welcome { font-size: 15px; margin-bottom: 20px; }
+      .menu-grid { gap: 16px; }
+      .card { padding: 16px 10px; }
+      .card img { width: 38px; height: 38px; }
+      .logout-btn { padding: 10px 18px; font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="container">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <p class="flash-message {{ category }}">{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+      {% endwith %}
+
+      <h2>🌾 Choose a Block 🌾</h2>
+      <div class="welcome">Welcome Buddy</div>
+
+      <div class="menu-grid">
+        <a href="/sale-bill" class="card">
+          <img src="https://img.icons8.com/fluency/96/invoice.png" alt="Sale Bill">
+          <span>Sale Bill</span>
+        </a>
+        <a href="/purchase-bill" class="card">
+          <img src="https://img.icons8.com/fluency/96/purchase-order.png" alt="Purchase Bill">
+          <span>Purchase Bill</span>
+        </a>
+        <a href="/transportation-bill" class="card">
+          <img src="https://img.icons8.com/fluency/96/truck.png" alt="Transport Bill">
+          <span>Transport Bill</span>
+        </a>
+        <a href="{{ url_for('ten_form_page') }}" class="card">
+          <img src="https://img.icons8.com/fluency/96/ms-word.png" alt="10 Form">
+          <span>10 Form</span>
+        </a>
+        <a href="/view-bills" class="card">
+          <img src="https://img.icons8.com/fluency/96/document.png" alt="View Sale Bills">
+          <span>View Sale Bills</span>
+        </a>
+        <a href="/view-purchase-bills" class="card">
+          <img src="https://img.icons8.com/fluency/96/checklist.png" alt="View Purchase Bills">
+          <span>View Purchase Bills</span>
+        </a>
+        <a href="/analytics" class="card">
+          <img src="https://img.icons8.com/fluency/96/combo-chart.png" alt="Analytics Dashboard">
+          <span>Analytics Dashboard</span>
+        </a>
+      </div>
+
+      <div class="logout">
+        <a href="/logout" class="logout-btn">
+          <img src="https://img.icons8.com/fluency/96/logout-rounded-left.png" alt="Logout">
+          <span>Logout</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Service Worker Registration -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/service-worker.js")
+        .then(() => console.log("✅ Service Worker registered"))
+        .catch(err => console.log("❌ Service Worker failed", err));
+    }
+  </script>
+</body>
+</html>

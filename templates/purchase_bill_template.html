@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Purchase Bill</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            padding: 20px;
+            background-color: #ffffff;
+            color: #000;
+        }
+        .bill-box {
+            border: 2px solid #000;
+            padding: 20px;
+            width: 100%;
+            max-width: 900px;
+            margin: auto;
+        }
+        .header {
+            background-color: #2e7d32;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .sub-header {
+            background-color: #f1f8e9;
+            text-align: center;
+            font-size: 14px;
+            padding: 5px;
+            color: #1b5e20;
+            font-weight: 600;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .section-title {
+            text-align: center;
+            font-weight: bold;
+            background-color: #ffeb3b;
+            border: 1px solid #000;
+            margin-top: 20px;
+            padding: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 6px;
+            text-align: center;
+        }
+        th {
+            background-color: #ffeb3b;
+            font-weight: bold;
+        }
+        .charges td {
+            text-align: left;
+        }
+        .footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        .sign-box {
+            margin-top: 40px;
+            border: 1px solid #000;
+            padding: 30px 10px;
+            text-align: center;
+            font-weight: bold;
+            width: 250px;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="bill-box">
+        <div class="header">SRI ANJANEYA TRADERS</div>
+        <div class="sub-header">Sai Nagar, Main Road, Kembhavi-585216, Tq. Shorapur Dt. Yadgir, Karnataka.<br>GSTIN : 29AXCPN1581G1ZD        Cell : 9448247345</div>
+        
+        <div class="info-row">
+            <div><strong>Bill No:</strong> {{ bill_no }}</div>
+            <div><strong>Date:</strong> {{ date }}</div>
+        </div>
+        
+        <div class="info-row">
+            <div><strong>Farmer Name:</strong> {{ farmer_name }}</div>
+            <div><strong>Village Name:</strong> {{ village_name }}</div>
+        </div>
+
+        <div class="section-title">PURCHASE INVOICE</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>SL.No</th>
+                    <th>Particular</th>
+                    <th>Bags</th>
+                    <th>NTWT</th>
+                    <th>STWT</th>
+                    <th>Total NTWT</th>
+                    <th>Rate</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>{{ rice_type }}</td>
+                    <td>{{ bags }}</td>
+                    <td>{{ ntwt }}</td>
+                    <td>{{ stwt }}</td>
+                    <td>{{ total_ntwt }}</td>
+                    <td>{{ rate }}</td>
+                    <td>{{ amount }}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <table class="charges">
+            <tr><td><strong></strong>Hamali</td><td> {{ hamali }}</td></tr>
+            <tr><td><strong></strong>Weigh Bridge</td><td> {{ weigh_bridge }}</td></tr>
+            <tr><td><strong>Grand Total</strong></td><td><strong> {{ grand_total }}</strong></td></tr>
+        </table>
+
+        <!-- ✅ Added Lorry No at bottom -->
+        <div class="footer">
+            <div><strong>Lorry No: </strong> {{ lorry_no }}</div>
+        </div>
+
+        <div class="sign-box">Authorized Seal & Sign</div>
+    </div>
+</body>
+</html>

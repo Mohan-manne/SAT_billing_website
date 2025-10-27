@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sale Bill Entry</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Arial', sans-serif; }
+    body {
+        background: linear-gradient(135deg, #154D71, #093FB4);
+        min-height:100vh; display:flex; justify-content:center; align-items:center; padding:20px;
+    }
+    .container {
+        background:#FFFCFB; padding:35px; border-radius:20px;
+        box-shadow:0 15px 40px rgba(0,0,0,0.2); width:100%; max-width:900px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .container:hover { transform: translateY(-5px); box-shadow:0 20px 50px rgba(0,0,0,0.3); }
+    h2 {
+        text-align:center; color:#093FB4; margin-bottom:25px; font-size:26px; position:relative;
+    }
+    h2::after {
+        content:''; position:absolute; bottom:-7px; left:50%; transform:translateX(-50%);
+        width:60px; height:4px; background:#ED3500; border-radius:2px;
+    }
+    .form-group { margin-bottom:20px; position:relative; }
+    .form-group label { display:block; color:#154D71; font-weight:500; margin-bottom:5px; }
+    .form-group input, .form-group select {
+        width:100%; padding:12px 15px 12px 40px;
+        border:2px solid #FFD8D8; border-radius:10px; font-size:14px;
+        background:#FFFCFB; color:#154D71; transition: all 0.3s ease;
+    }
+    .form-group input:focus, .form-group select:focus { border-color:#093FB4; box-shadow:0 0 8px rgba(9,63,180,0.4); outline:none; }
+    .form-group i { position:absolute; left:12px; top:36px; color:#ED3500; }
+    .radio-group { margin-bottom:20px; }
+    .radio-group label { color:#154D71; font-weight:500; }
+    .radio-group input[type="radio"] { margin-right:8px; accent-color:#ED3500; cursor:pointer; }
+    .radio-group .sub-field { margin-top:10px; display:none; }
+    .radio-group .sub-field.active { display:block; }
+    .buttons {
+        display:flex; gap:15px; justify-content:center; flex-wrap:wrap;
+    }
+    .buttons button {
+        padding:12px 25px; border:none; border-radius:12px;
+        color:#FFFCFB; font-weight:600; cursor:pointer;
+        transition: transform 0.2s, box-shadow 0.3s, background 0.3s;
+    }
+    .buttons button:hover { transform: translateY(-2px); }
+    .submit-btn {
+        background:linear-gradient(45deg, #093FB4,#154D71);
+        box-shadow:0 5px 15px rgba(9,63,180,0.4);
+    }
+    .submit-btn:hover {
+        background:linear-gradient(45deg, #154D71,#093FB4);
+        box-shadow:0 8px 25px rgba(9,63,180,0.6);
+    }
+    .reset-btn { background:#ED3500; box-shadow:0 5px 15px rgba(237,53,0,0.4); }
+    .reset-btn:hover { background:#c32c00; box-shadow:0 8px 25px rgba(237,53,0,0.6); }
+    .back-btn {
+        background:linear-gradient(45deg,#093FB4,#154D71);
+        box-shadow:0 5px 15px rgba(9,63,180,0.4);
+    }
+    .back-btn:hover {
+        background:linear-gradient(45deg,#154D71,#093FB4);
+        box-shadow:0 8px 25px rgba(9,63,180,0.6);
+    }
+    #preview { margin-top:20px; text-align:center; color:#093FB4; font-weight:600; font-size:15px; }
+    .flash-message { margin-bottom:15px; padding:10px; border-radius:6px; color:#FFFCFB; font-weight:600; }
+    .success { background-color:#2ecc71; }
+    .error { background-color:#ED3500; }
+    .warning { background-color:#FFD8D8; color:#ED3500; }
+    .info { background-color:#093FB4; }
+    #previewModal {
+        display:none; position:fixed; top:0; left:0; right:0; bottom:0;
+        background:rgba(21,77,113,0.7); justify-content:center; align-items:center; z-index:9999; padding:10px;
+    }
+    #previewModalContent {
+        background:#FFFCFB; border-radius:15px;
+        width:95%; max-width:750px; padding:25px 30px;
+        box-shadow:0 10px 30px rgba(9,63,180,0.3);
+        position:relative; max-height:90vh; overflow-y:auto;
+    }
+    .close-btn {
+        position:absolute; top:10px; right:15px;
+        cursor:pointer; font-size:18px; color:#ED3500; font-weight:bold;
+    }
+    .table-wrapper {
+        overflow-x:auto; -webkit-overflow-scrolling:touch; margin-top:10px;
+    }
+    table {
+        width:100%; border-collapse:collapse; min-width:500px;
+    }
+    th, td {
+        border:1px solid #093FB4; padding:8px; text-align:center; font-size:14px;
+    }
+    th { background:#f0f0f0; color:#154D71; }
+    @media (max-width:768px){
+        .container{padding:25px;}
+        h2{font-size:22px;}
+        .buttons{flex-direction:column;}
+        .buttons button{width:100%;}
+        table { font-size:13px; }
+    }
+    @media (max-width:480px){
+        body{padding:10px;}
+        h2{font-size:20px;}
+        .form-group input, .form-group select{font-size:13px; padding-left:35px;}
+        th, td{font-size:12px; padding:6px;}
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <p class="flash-message {{ category }}">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <h2>🧾 Sale Bill Entry</h2>
+    <form id="saleBillForm" action="/sale-bill" method="POST" onsubmit="return validateForm()">
+        <div class="form-group">
+            <label>Date Mode *</label><i class="fa fa-calendar"></i>
+            <select id="date_mode" name="date_mode" onchange="toggleDateInput()">
+                <option value="auto">Auto (Current Date)</option>
+                <option value="manual">Manual</option>
+            </select>
+        </div>
+        <div class="form-group" id="manual_date_group" style="display:none;">
+            <label>Date *</label><i class="fa fa-calendar"></i>
+            <input type="date" id="manual_date" name="manual_date" required>
+        </div>
+        <div class="form-group">
+            <label>Mill Name *</label><i class="fa fa-industry"></i>
+            <input type="text" name="mill_name" required pattern="[A-Za-z\s]+" oninput="this.value=this.value.toUpperCase()" title="Only letters and spaces allowed">
+        </div>
+        <div class="form-group">
+            <label>Mill Code</label><i class="fa fa-barcode"></i>
+            <input type="text" name="mill_code" oninput="this.value=this.value.toUpperCase()">
+        </div>
+        <div class="form-group">
+            <label>Farmer Name *</label><i class="fa fa-user"></i>
+            <input type="text" name="farmer_name" required oninput="this.value=this.value.toUpperCase()">
+        </div>
+        <div class="form-group">
+            <label>Rice Type *</label><i class="fa fa-seedling"></i>
+            <input type="text" name="rice_type" required pattern="[A-Za-z\s]+" oninput="this.value=this.value.toUpperCase()" title="Only letters and spaces allowed">
+        </div>
+        <div class="form-group">
+            <label>Bags *</label><i class="fa fa-boxes-stacked"></i>
+            <input type="number" name="bags" required min="1">
+        </div>
+        <div class="form-group">
+            <label>Net Weight *</label><i class="fa fa-weight"></i>
+            <input type="number" step="0.01" name="ntwt" required min="0.01">
+        </div>
+        <div class="form-group">
+            <label>Price *</label><i class="fa fa-rupee-sign"></i>
+            <input type="number" step="0.01" name="price" required min="0.01">
+        </div>
+        <div class="radio-group">
+            <label>Net Bag Type *</label><br>
+            <input type="radio" name="calc_type" value="1" checked onchange="toggleFields()"> Option 1 → (No STWT)<br>
+            <input type="radio" name="calc_type" value="2" onchange="toggleFields()"> Option 2 → (With STWT)<br>
+            <input type="radio" name="calc_type" value="3" onchange="toggleFields()"> Option 3 → (For 100 Kgs)
+            <div id="stwt_field" class="sub-field">
+                <div class="form-group">
+                    <label>Sut Rate (per bag)</label><i class="fa fa-minus"></i>
+                    <input type="number" step="0.01" name="sut_rate" id="sut_rate_input" min="0">
+                </div>
+            </div>
+        </div>
+        <div class="radio-group">
+            <label>Commission</label><br>
+            <input type="radio" name="commission" value="yes" > Yes
+            <input type="radio" name="commission" value="no"checked> No
+        </div>
+        <div class="radio-group">
+            <label>Hamali</label><br>
+            <input type="radio" name="hamali" value="yes" id="hamali_yes" onchange="toggleFields()"> Yes
+            <input type="radio" name="hamali" value="no" id="hamali_no" checked onchange="toggleFields()"> No
+            <div id="hamali_rate" class="sub-field">
+                <div class="form-group">
+                    <label>Hamali Rate</label><i class="fa fa-rupee-sign"></i>
+                    <input type="number" step="0.01" name="hamali_rate" min="0">
+                </div>
+            </div>
+        </div>
+        <div class="radio-group">
+            <label>Gunny Bags</label><br>
+            <input type="radio" name="gunny_bags" value="yes" id="gunny_yes" onchange="toggleFields()"> Yes
+            <input type="radio" name="gunny_bags" value="no" id="gunny_no" checked onchange="toggleFields()"> No
+            <div id="gunny_rate" class="sub-field">
+                <div class="form-group">
+                    <label>Gunny Rate</label><i class="fa fa-sack-dollar"></i>
+                    <input type="number" step="0.01" name="gunny_rate" min="0">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Advance</label><i class="fa fa-money-check-alt"></i>
+            <input type="number" step="0.01" name="advance" min="0">
+        </div>
+        <div class="form-group">
+            <label>RMC Amount</label><i class="fa fa-coins"></i>
+            <input type="number" step="0.01" name="rmc" min="0">
+        </div>
+        <div class="form-group">
+            <label>Lorry No *</label><i class="fa fa-truck"></i>
+            <input type="text" name="lorry_no" required oninput="this.value=this.value.toUpperCase()">
+        </div>
+        <div class="form-group">
+            <label>Mobile No *</label><i class="fa fa-phone"></i>
+            <input type="text" name="mobile_no" required pattern="\d{10}" maxlength="10" title="Enter a valid 10-digit mobile number">
+        </div>
+        <div id="preview"></div>
+        <div class="buttons">
+            <button type="button" class="submit-btn" id="previewBtn">📄 Preview Bill</button>
+            <button type="reset" class="reset-btn">🔄 Reset</button>
+            <a href="/menu"><button type="button" class="back-btn">🔙 Back to Menu</button></a>
+        </div>
+    </form>
+</div>
+<div id="previewModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(21,77,113,0.7); justify-content:center; align-items:center; z-index:9999; padding:10px;">
+    <div id="previewModalContent">
+        <span class="close-btn" onclick="closePreview()">✖</span>
+        <h4 style="text-align:center; margin-bottom:15px; color:#154D71;">📄 Sale Bill Preview</h4>
+        <div class="table-wrapper">
+            <div id="previewTable"></div>
+        </div>
+        <div style="text-align:center; margin-top:10px; flex-wrap:wrap;">
+            <button id="confirmPreview" style="background:#154D71; color:#FFFCFB; padding:10px 20px; border:none; border-radius:8px; font-weight:600; margin:5px; cursor:pointer;">✅ Confirm & Generate PDF</button>
+            <button id="cancelPreview" onclick="closePreview()" style="background:#ED3500; color:#FFFCFB; padding:10px 20px; border:none; border-radius:8px; font-weight:600; margin:5px; cursor:pointer;">❌ Cancel</button>
+        </div>
+    </div>
+</div>
+<script>
+function setAutoDate() {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    document.getElementById('manual_date').value = `${yyyy}-${mm}-${dd}`;
+}
+
+function toggleDateInput() {
+    const dateMode = document.getElementById('date_mode').value;
+    const dateGroup = document.getElementById('manual_date_group');
+    const dateInput = document.getElementById('manual_date');
+    if (dateMode === 'manual') {
+        dateGroup.style.display = 'block';
+        dateInput.removeAttribute('readonly');
+        dateInput.value = '';
+    } else {
+        dateGroup.style.display = 'none';
+        dateInput.setAttribute('readonly', true);
+        setAutoDate();
+    }
+}
+
+function toggleFields() {
+    const calcType = document.querySelector('input[name="calc_type"]:checked').value;
+    document.getElementById('stwt_field').classList.toggle('active', calcType === '2');
+    document.getElementById('hamali_rate').classList.toggle('active', document.getElementById('hamali_yes').checked);
+    document.getElementById('gunny_rate').classList.toggle('active', document.getElementById('gunny_yes').checked);
+}
+
+function validateForm() {
+    const calcType = document.querySelector('input[name="calc_type"]:checked').value;
+    if (calcType === '2' && !document.getElementById('sut_rate_input').value) {
+        alert('Please enter Sut Rate for Option 2.');
+        return false;
+    }
+    if (document.getElementById('hamali_yes').checked && !document.querySelector('input[name="hamali_rate"]').value) {
+        alert('Please enter Hamali Rate when Hamali is selected.');
+        return false;
+    }
+    if (document.getElementById('gunny_yes').checked && !document.querySelector('input[name="gunny_rate"]').value) {
+        alert('Please enter Gunny Rate when Gunny Bags is selected.');
+        return false;
+    }
+    return confirm("Are you sure you want to submit and generate the PDF?");
+}
+
+const form = document.getElementById('saleBillForm');
+const previewBtn = document.getElementById('previewBtn');
+const previewModal = document.getElementById('previewModal');
+const previewTable = document.getElementById('previewTable');
+
+previewBtn.addEventListener('click', () => {
+    const formData = new FormData(form);
+    let html = '<table><tr><th>Field</th><th>Value</th></tr>';
+    for (let [key, value] of formData.entries()) {
+        html += `<tr><td>${key.replace('_', ' ').toUpperCase()}</td><td>${value}</td></tr>`;
+    }
+    html += '</table>';
+    previewTable.innerHTML = html;
+    previewModal.style.display = 'flex';
+});
+
+function closePreview() { previewModal.style.display = 'none'; }
+
+document.getElementById('confirmPreview').addEventListener('click', () => { form.submit(); });
+
+window.onload = () => {
+    setAutoDate();
+    toggleFields();
+    document.getElementById('date_mode').addEventListener('change', toggleDateInput);
+};
+</script>
+</body>
+</html>

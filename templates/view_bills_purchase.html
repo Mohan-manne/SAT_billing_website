@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Purchase Bills - SRI ANJANEYA TRADERS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ✅ PWA Support -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#00796b">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <style>
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background: #e0f7f1; 
+            padding: 20px; 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: auto; 
+            background-color: #ffffff; 
+            padding: 25px; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12); 
+            overflow-x: auto; 
+        }
+        h2 { 
+            color: #00796b; 
+            text-align: center; 
+            margin-bottom: 20px; 
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            min-width: 1000px; 
+        }
+        th, td { 
+            padding: 12px; 
+            text-align: left; 
+            border-bottom: 1px solid #ccc; 
+            white-space: nowrap; 
+        }
+        th { 
+            background: linear-gradient(135deg, #00796b, #004d40); 
+            color: white; 
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        tr:nth-child(even) { background-color: #f1f8f6; }
+        tr:hover { background-color: #d0ede9; transition: all 0.2s ease-in-out; }
+        .buttons, .form-buttons { text-align: center; margin: 20px 0; }
+        .buttons a, .form-buttons button { 
+            margin: 5px; padding: 10px 22px; background: linear-gradient(135deg, #26a69a, #00796b); 
+            color: white; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; display: inline-block;
+        }
+        .buttons a:hover, .form-buttons button:hover { background: linear-gradient(135deg, #00796b, #004d40); }
+        .flash-message { text-align: center; margin-bottom: 15px; padding: 12px; border-radius: 8px; font-weight: 500; }
+        .success { background-color: #4caf50; color: white; }
+        .error { background-color: #f44336; color: white; }
+        input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
+        /* Responsive */
+        @media (max-width: 768px) { body { padding: 15px; } h2 { font-size: 1.5rem; } .buttons a, .form-buttons button { padding: 8px 18px; font-size: 0.95rem; } }
+        @media (max-width: 480px) { body { padding: 10px; } .container { padding: 15px; } h2 { font-size: 1.2rem; } .buttons, .form-buttons { display: flex; flex-direction: column; gap: 10px; } .buttons a, .form-buttons button { width: 100%; text-align: center; font-size: 0.9rem; padding: 8px 12px; } th, td { padding: 8px; font-size: 0.85rem; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <h2>🌾 View Purchase Bills</h2>
+
+    <div class="buttons">
+        <a href="/download/purchase/excel">Download Excel</a>
+        <a href="/menu">Back to Menu</a>   
+    </div>
+
+    <div style="text-align: center; margin: 20px 0;">
+        <form method="GET" action="/view-purchase-bills">
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date" value="{{ request.args.get('date','') }}">
+            
+            <label for="bill_no">Bill No:</label>
+            <select id="bill_no" name="bill_no">
+                <option value="">All</option>
+                {% for no in unique_bill_nos %}
+                <option value="{{ no }}" {% if request.args.get('bill_no') == no %}selected{% endif %}>{{ no }}</option>
+                {% endfor %}
+            </select>
+            
+            <label for="mill_name">Mill Name:</label>
+            <select id="mill_name" name="mill_name">
+                <option value="">All</option>
+                {% for name in unique_mill_names %}
+                <option value="{{ name }}" {% if request.args.get('mill_name') == name %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+            
+            <label for="farmer_name">Farmer Name:</label>
+            <select id="farmer_name" name="farmer_name">
+                <option value="">All</option>
+                {% for name in unique_farmer_names %}
+                <option value="{{ name }}" {% if request.args.get('farmer_name') == name %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+            
+            <label for="rice_type">Rice Type:</label>
+            <select id="rice_type" name="rice_type">
+                <option value="">All</option>
+                {% for rice in unique_rice_types %}
+                <option value="{{ rice }}" {% if request.args.get('rice_type') == rice %}selected{% endif %}>{{ rice }}</option>
+                {% endfor %}
+            </select>
+            
+            <button type="submit">Search</button>
+            <button type="button" onclick="window.location.href=window.location.pathname">Reset</button>
+        </form>
+    </div>
+
+    {% if bills %}
+    <form method="POST" action="/view-purchase-bills">
+        <table>
+            <thead>
+            <tr>
+                <th>Select</th>
+                <th>Bill No</th>
+                <th>Date</th>
+                <th>Farmer Name</th>
+                <th>Village Name</th>
+                <th>Mill Name</th>
+                <th>Rice Type</th>
+                <th>Bags</th>
+                <th>NTWT</th>
+                <th>STWT</th>
+                <th>Total NTWT</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>Hamali</th>
+                <th>Weigh Bridge</th>
+                <th>Grand Total</th>
+                <th>Lorry No</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for bill in bills %}
+            <tr>
+                <td><input type="checkbox" name="delete_ids" value="{{ bill.bill_no }}"></td>
+                <td>{{ bill.bill_no }}</td>
+                <td>{{ bill.date }}</td>
+                <td>{{ bill.farmer_name }}</td>
+                <td>{{ bill.village_name }}</td>
+                <td>{{ bill.mill_name }}</td>
+                <td>{{ bill.rice_type }}</td>
+                <td>{{ bill.bags }}</td>
+                <td>{{ bill.ntwt }}</td>
+                <td>{{ bill.stwt }}</td>
+                <td>{{ bill.total_ntwt }}</td>
+                <td>{{ bill.rate }}</td>
+                <td>{{ bill.amount }}</td>
+                <td>{{ bill.hamali }}</td>
+                <td>{{ bill.weigh_bridge }}</td>
+                <td>{{ bill.grand_total }}</td>
+                <td>{{ bill.lorry_no }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="form-buttons">
+            <button type="submit" onclick="return confirm('Delete selected bills?')">🗑️ Delete Selected</button>
+        </div>
+    </form>
+    <form method="POST" action="/download-selected-bills/purchase">
+        <table style="display:none;">
+            <tbody>
+            {% for bill in bills %}
+            <tr>
+                <td><input type="checkbox" name="download_ids" value="{{ bill.bill_no }}"></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="form-buttons">
+            <button type="submit" onclick="syncCheckboxes(); return confirm('Download selected bills as PDF?')">📥 Download Selected Bills</button>
+        </div>
+    </form>
+    {% else %}
+        <p style="text-align:center; color:#00796b; font-weight:500;">No purchase bills found.</p>
+    {% endif %}
+</div>
+
+<script>
+    // ✅ Register Service Worker
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/static/sw.js")
+            .then(() => console.log("Service Worker Registered ✅"))
+            .catch((err) => console.error("SW Registration Failed:", err));
+    }
+
+    function syncCheckboxes() {
+        const deleteCheckboxes = document.querySelectorAll('input[name="delete_ids"]');
+        const downloadCheckboxes = document.querySelectorAll('input[name="download_ids"]');
+        for (let i = 0; i < deleteCheckboxes.length; i++) {
+            downloadCheckboxes[i].checked = deleteCheckboxes[i].checked;
+        }
+    }
+</script>
+</body>
+</html>

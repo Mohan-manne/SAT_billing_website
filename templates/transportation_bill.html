@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Transportation Bill - SRI ANJANEYA TRADERS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0d3b66" />
+
+  <!-- iOS PWA Support -->
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #d9f0ff, #ffffff);
+      font-family: 'Poppins', sans-serif;
+      padding: 30px 10px;
+    }
+
+    .container {
+      max-width: 600px;
+      background: #ffffff;
+      padding: 30px 35px;
+      border-radius: 15px;
+      border: 2px solid #0d3b66;
+      box-shadow: 0 10px 25px rgba(13, 59, 102, 0.15);
+    }
+
+    .header h2 {
+      color: #0d3b66;
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #074c91;
+      margin-bottom: 5px;
+    }
+
+    .form-control {
+      border-radius: 8px;
+      border: 1.5px solid #a0c4ff;
+      padding: 10px 12px;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: #0d3b66;
+      box-shadow: 0 0 8px rgba(13, 59, 102, 0.2);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .btn {
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 10px 15px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background-color: #0d3b66;
+      color: #ffffff;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #074c91;
+    }
+
+    .btn-reset {
+      background-color: #008080;
+      color: #ffffff;
+      border: none;
+    }
+    .btn-reset:hover {
+      background-color: #006666;
+    }
+
+    .btn-menu {
+      background-color: #ff7f50;
+      color: #ffffff;
+      border: none;
+    }
+    .btn-menu:hover {
+      background-color: #e0673e;
+    }
+
+    .alert {
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 25px 20px;
+      }
+      .header h2 {
+        font-size: 1.6rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .container {
+        padding: 20px 15px;
+      }
+      .btn-group {
+        flex-direction: column;
+      }
+      .btn-group .btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 400px) {
+      body {
+        padding: 15px 5px;
+      }
+      .container {
+        padding: 15px 12px;
+      }
+      .header h2 {
+        font-size: 1.4rem;
+      }
+      .form-label {
+        font-size: 0.9rem;
+      }
+      .form-control {
+        font-size: 0.85rem;
+        padding: 8px 10px;
+      }
+      .btn {
+        font-size: 0.9rem;
+        padding: 8px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>SRI ANJANEYA TRADERS</h2>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="/transportation-bill" id="transportationForm">
+      <!-- Date Mode Selector & Date Input -->
+      <div class="mb-3">
+        <label class="form-label">Date Mode *</label>
+        <select id="date_mode" name="date_mode" class="form-control" onchange="toggleDateInput()">
+          <option value="auto">Auto (Current Date)</option>
+          <option value="manual">Manual</option>
+        </select>
+      </div>
+      <div class="mb-3" id="manual_date_group" style="display:none;">
+        <label class="form-label">Date *</label>
+        <input type="date" id="date" name="date" class="form-control">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Ref</label>
+        <input type="text" class="form-control" name="ref" value="{{bill_no or '' }}" readonly />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">M/s, Sir (Mill Name) *</label>
+        <input type="text" class="form-control" name="ms" required />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">From *</label>
+        <input type="text" class="form-control" name="from_location" required />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">To *</label>
+        <input type="text" class="form-control" name="to_location" required />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">No. of Bags *</label>
+        <input type="number" class="form-control" name="bags" min="0" required />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Rice Type *</label>
+        <input type="text" class="form-control" name="rice_type" required />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Weight (Kgs) *</label>
+        <input type="number" step="0.01" class="form-control" name="kgs" min="0" required />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Lorry No. *</label>
+        <input type="text" class="form-control" name="lorry_no" required />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Freight Rs. *</label>
+        <input type="number" step="0.01" class="form-control" name="lorry_freight" min="0" required />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Less Advance Rs.</label>
+        <input type="number" step="0.01" class="form-control" name="advance" min="0" value="0.00" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Zero Charge Rs.</label>
+        <input type="number" step="0.01" class="form-control" name="zero_charge" min="0" value="0.00" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Mobile Number *</label>
+        <input type="text" class="form-control" name="mobile_no" required />
+      </div>
+
+      <div class="d-grid gap-2 mb-3">
+        <button type="submit" class="btn btn-primary">Generate PDF</button>
+      </div>
+
+      <div class="btn-group">
+        <button type="reset" class="btn btn-reset">Reset</button>
+        <a href="/menu" class="btn btn-menu">Back to Menu</a>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    function setAutoDate() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      document.getElementById('date').value = `${yyyy}-${mm}-${dd}`;
+    }
+
+    function toggleDateInput() {
+      const dateMode = document.getElementById('date_mode').value;
+      const dateGroup = document.getElementById('manual_date_group');
+      const dateInput = document.getElementById('date');
+      
+      if (dateMode === 'manual') {
+        dateGroup.style.display = 'block';
+        dateInput.removeAttribute('readonly');
+        dateInput.value = ''; // Clear the date input when switching to manual
+      } else {
+        dateGroup.style.display = 'none';
+        dateInput.setAttribute('readonly', true);
+        setAutoDate();
+      }
+    }
+
+    window.onload = () => {
+      setAutoDate();
+      document.getElementById('date_mode').addEventListener('change', toggleDateInput);
+    };
+  </script>
+
+  <!-- Register Service Worker -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("/service-worker.js")
+          .then(reg => console.log("Service Worker registered:", reg.scope))
+          .catch(err => console.error("Service Worker registration failed:", err));
+      });
+    }
+  </script>
+</body>
+</html>

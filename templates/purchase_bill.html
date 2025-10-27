@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purchase Bill Entry</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- PWA Support -->
+<meta name="theme-color" content="#154D71">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Arial', sans-serif; }
+    body {
+        background: #FFFCFB;
+        min-height: 100vh;
+        display:flex; justify-content:center; align-items:center;
+        padding:20px;
+    }
+    .container {
+        background: #FFFCFB;
+        padding: 30px;
+        border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(9,63,180,0.2);
+        width: 100%; max-width: 950px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(9,63,180,0.3);
+    }
+    h2 {
+        text-align:center;
+        color:#154D71;
+        margin-bottom:25px;
+        font-size:24px;
+        position:relative;
+    }
+    h2::after {
+        content:''; position:absolute; bottom:-5px; left:50%;
+        transform:translateX(-50%);
+        width:50px; height:3px; background:#ED3500;
+    }
+    .form-group { margin-bottom:20px; position:relative; }
+    .form-group label { display:block; color:#154D71; font-weight:500; margin-bottom:5px; }
+    .form-group input, .form-group select {
+        width:100%; padding:10px 12px 10px 40px;
+        border:2px solid #FFD8D8; border-radius:8px; font-size:14px;
+        background:#FFFCFB; color:#154D71;
+        transition: all 0.3s ease;
+    }
+    .form-group input:focus, .form-group select:focus { border-color:#093FB4; outline:none; box-shadow:0 0 8px rgba(9,63,180,0.3); }
+    .form-group i { position:absolute; left:12px; top:35px; color:#ED3500; }
+    .buttons { display:flex; gap:15px; justify-content:center; margin-top:15px; flex-wrap:wrap; }
+    .buttons button {
+        padding:12px 25px; border:none; border-radius:8px; font-weight:600; cursor:pointer;
+        transition: all 0.3s ease;
+    }
+    .buttons .submit-btn { background:#093FB4; color:#FFFCFB; }
+    .buttons .submit-btn:hover { background:#154D71; }
+    .buttons .reset-btn { background:#ED3500; color:#FFFCFB; }
+    .buttons .reset-btn:hover { background:#c32c00; }
+    .buttons .back-btn { background:#154D71; color:#FFFCFB; }
+    .buttons .back-btn:hover { background:#093FB4; }
+    #preview { margin-top:20px; text-align:center; color:#154D71; font-weight:bold; }
+
+    .flash-message { margin-bottom:15px; padding:10px; border-radius:5px; text-align:center; color:#FFFCFB; }
+    .success { background-color:#093FB4; }
+    .error { background-color:#ED3500; }
+    .warning { background-color:#FFD8D8; color:#154D71; }
+    .info { background-color:#154D71; }
+
+    /* Preview Modal */
+    #previewModal { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(21,77,113,0.7); justify-content:center; align-items:center; z-index:9999; }
+    #previewModalContent {
+        background:#FFFCFB; border-radius:15px; width:95%; max-width:750px;
+        padding:25px 30px; box-shadow:0 10px 30px rgba(9,63,180,0.3);
+        position:relative; max-height:90vh; overflow-y:auto; transition: transform 0.3s ease;
+    }
+    #previewModalContent table { width:100%; border-collapse:collapse; font-size:14px; min-width:400px; }
+    #previewModalContent th, #previewModalContent td { border:1px solid #093FB4; padding:8px 12px; text-align:left; }
+    #previewModalContent th { background-color:#093FB4; color:#FFFCFB; }
+    #previewModalContent tr:nth-child(even) { background-color:#FFD8D8; }
+    #previewModalContent caption { font-weight:700; font-size:18px; margin-bottom:15px; color:#154D71; }
+    #previewModalContent button { padding:10px 20px; border:none; border-radius:8px; font-weight:600; margin:5px; cursor:pointer; }
+    #confirmPreview { background:#154D71; color:#FFFCFB; }
+    #confirmPreview:hover { background:#093FB4; }
+    #cancelPreview { background:#ED3500; color:#FFFCFB; }
+    #cancelPreview:hover { background:#c32c00; }
+    #previewModalContent span.close-btn { position:absolute; top:12px; right:15px; font-weight:bold; font-size:20px; cursor:pointer; color:#ED3500; }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container { padding:20px; }
+        .buttons { flex-direction:column; }
+        .buttons button { width:100%; }
+    }
+    @media (max-width: 480px) {
+        h2 { font-size:20px; }
+        .form-group input, .form-group select { padding:10px 35px; font-size:13px; }
+        .form-group i { top:32px; font-size:14px; }
+        #previewModalContent { padding:15px; }
+        #previewModalContent table { font-size:12px; min-width:300px; }
+    }
+    @media (max-width: 360px) {
+        .form-group input, .form-group select { font-size:12px; padding:8px 30px; }
+        .buttons button { font-size:13px; padding:10px; }
+        #previewModalContent table { font-size:11px; min-width:260px; }
+    }
+    /* Make modal table scrollable on very small screens */
+    #previewTable { overflow-x:auto; }
+</style>
+</head>
+<body>
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p class="flash-message {{ category }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <h2>🧾 Purchase Bill Entry</h2>
+
+    <form id="purchaseBillForm" action="/purchase-bill" method="POST" onsubmit="return validateForm();">
+        <!-- Date Mode Selector & Date Input -->
+        <div class="form-group">
+            <label>Date Mode *</label><i class="fa fa-calendar"></i>
+            <select id="date_mode" name="date_mode" onchange="toggleDateInput()">
+                <option value="auto">Auto (Current Date)</option>
+                <option value="manual">Manual</option>
+            </select>
+        </div>
+        <div class="form-group" id="manual_date_group" style="display:none;">
+            <label>Date *</label><i class="fa fa-calendar"></i>
+            <input type="date" id="date" name="date" required>
+        </div>
+        <div class="form-group">
+            <label>Bill No *</label><i class="fa fa-hashtag"></i>
+            <input type="text" id="bill_no" name="bill_no" readonly required>
+        </div>
+
+        <!-- Farmer & Village & Mill -->
+        <div class="form-group">
+            <label>Farmer Name *</label><i class="fa fa-user"></i>
+            <input type="text" name="farmer_name" required oninput="this.value=this.value.toUpperCase()">
+        </div>
+        <div class="form-group">
+            <label>Village Name *</label><i class="fa fa-map-marker-alt"></i>
+            <input type="text" name="village_name" required oninput="this.value=this.value.toUpperCase()">
+        </div>
+        <div class="form-group">
+            <label>Mill Name *</label><i class="fa fa-industry"></i>
+            <input type="text" name="mill_name" required oninput="this.value=this.value.toUpperCase()">
+        </div>
+        <div class="form-group">
+            <label>Rice Type *</label><i class="fa fa-seedling"></i>
+            <input type="text" name="rice_type" required pattern="[A-Za-z\s]+" oninput="this.value=this.value.toUpperCase()" title="Only letters and spaces allowed">
+        </div>
+
+        <!-- Bags & Weight Calculations -->
+        <div class="form-group"><label>Bags *</label><i class="fa fa-box"></i><input type="number" id="bags" name="bags" required oninput="updateCalculations()"></div>
+        <div class="form-group"><label>NTWT *</label><i class="fa fa-weight-hanging"></i><input type="number" step="0.01" id="ntwt" name="ntwt" required oninput="updateCalculations()"></div>
+        <div class="form-group"><label>Sut Weight *</label><i class="fa fa-percentage"></i><input type="number" step="0.01" id="sut_rate" name="sut_rate" required oninput="updateCalculations()"></div>
+        <div class="form-group"><label>STWT *</label><i class="fa fa-calculator"></i><input type="text" id="stwt" name="stwt" readonly></div>
+        <div class="form-group"><label>Total NTWT *</label><i class="fa fa-equals"></i><input type="text" id="total_ntwt" name="total_ntwt" readonly></div>
+
+        <!-- Rates & Amount -->
+        <div class="form-group"><label>Rate *</label><i class="fa fa-rupee-sign"></i><input type="number" step="0.01" id="rate" name="rate" required oninput="updateCalculations()"></div>
+        <div class="form-group"><label>Amount *</label><i class="fa fa-money-bill"></i><input type="text" id="amount" name="amount" readonly></div>
+        <div class="form-group"><label>Hamali Rate *</label><i class="fa fa-hand-holding"></i><input type="number" step="0.01" id="hamali_rate" name="hamali_rate" required oninput="updateCalculations()"></div>
+        <div class="form-group"><label>Weigh Bridge *</label><i class="fa fa-balance-scale"></i><input type="number" step="0.01" id="weigh_bridge" name="weigh_bridge" required oninput="updateCalculations()"></div>
+        <div class="form-group"><label>Grand Total *</label><i class="fa fa-calculator"></i><input type="text" id="grand_total" name="grand_total" readonly></div>
+        <div class="form-group"><label>Lorry No *</label><i class="fa fa-truck"></i><input type="text" name="lorry_no" required oninput="this.value=this.value.toUpperCase()"></div>
+
+        <div id="preview"></div>
+
+        <div class="buttons">
+            <button type="button" class="submit-btn" id="previewBtn">📄 Preview Bill</button>
+            <button type="reset" class="reset-btn">🔄 Reset</button>
+            <a href="/menu"><button type="button" class="back-btn">🔙 Back to Menu</button></a>
+        </div>
+    </form>
+</div>
+
+<!-- Preview Modal -->
+<div id="previewModal" class="d-flex">
+    <div id="previewModalContent">
+        <span class="close-btn" onclick="closePreview()">✖</span>
+        <h4 style="text-align:center; margin-bottom:15px; color:#154D71;">📄 Purchase Bill Preview</h4>
+        <div id="previewTable"></div>
+        <div style="text-align:center; margin-top:10px;">
+            <button id="confirmPreview">✅ Confirm & Generate PDF</button>
+            <button id="cancelPreview" onclick="closePreview()">❌ Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function setAutoDate() {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    document.getElementById('date').value = `${yyyy}-${mm}-${dd}`;
+}
+
+function toggleDateInput() {
+    const dateMode = document.getElementById('date_mode').value;
+    const dateGroup = document.getElementById('manual_date_group');
+    const dateInput = document.getElementById('date');
+    
+    if (dateMode === 'manual') {
+        dateGroup.style.display = 'block';
+        dateInput.removeAttribute('readonly');
+        dateInput.value = ''; // Clear the date input when switching to manual
+    } else {
+        dateGroup.style.display = 'none';
+        dateInput.setAttribute('readonly', true);
+        setAutoDate();
+    }
+}
+
+function updateCalculations() {
+    const bags = parseFloat(document.getElementById('bags').value)||0;
+    const ntwt = parseFloat(document.getElementById('ntwt').value)||0;
+    const sutRate = parseFloat(document.getElementById('sut_rate').value)||0;
+    const rate = parseFloat(document.getElementById('rate').value)||0;
+    const hamaliRate = parseFloat(document.getElementById('hamali_rate').value)||0;
+    const weighBridge = parseFloat(document.getElementById('weigh_bridge').value)||0;
+
+    const stwt = bags*sutRate;
+    const totalNtwt = (ntwt-stwt)/75;
+    const amount = totalNtwt*rate;
+    const hamali = bags*hamaliRate;
+    const grandTotal = amount - hamali - weighBridge;
+
+    document.getElementById('stwt').value = isNaN(stwt)?'0.00':stwt.toFixed(2);
+    document.getElementById('total_ntwt').value = isNaN(totalNtwt)?'0.00':totalNtwt.toFixed(2);
+    document.getElementById('amount').value = isNaN(amount)?'0.00':amount.toFixed(2);
+    document.getElementById('grand_total').value = isNaN(grandTotal)?'0.00':grandTotal.toFixed(2);
+
+    document.getElementById('preview').innerText = `STWT: ${stwt.toFixed(2)} | Total NTWT: ${totalNtwt.toFixed(2)} | Amount: ₹${amount.toFixed(2)} | Grand Total: ₹${grandTotal.toFixed(2)}`;
+}
+
+// Modal Preview
+const previewBtn = document.getElementById('previewBtn');
+const previewModal = document.getElementById('previewModal');
+const previewTable = document.getElementById('previewTable');
+const form = document.getElementById('purchaseBillForm');
+
+previewBtn.addEventListener('click', () => {
+    const formData = new FormData(form);
+    let html = '<table class="table table-bordered"><tr><th>Field</th><th>Value</th></tr>';
+    for (let [key,value] of formData.entries()) {
+        html += `<tr><td>${key.replace('_',' ').toUpperCase()}</td><td>${value}</td></tr>`;
+    }
+    html += '</table>';
+    previewTable.innerHTML = html;
+    previewModal.style.display = 'flex';
+});
+
+function closePreview(){ previewModal.style.display='none'; }
+document.getElementById('confirmPreview').addEventListener('click',()=>{ form.submit(); });
+
+function validateForm(){ return confirm("Are you sure you want to submit and generate the PDF?"); }
+
+window.onload=()=>{
+    setAutoDate();
+    updateCalculations();
+    ['bags','ntwt','sut_rate','rate','hamali_rate','weigh_bridge'].forEach(id=>{
+        document.getElementById(id).addEventListener('input', updateCalculations);
+    });
+    document.getElementById('date_mode').addEventListener('change', toggleDateInput);
+};
+
+// Register Service Worker for PWA
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js")
+        .then(reg => console.log("Service Worker registered:", reg.scope))
+        .catch(err => console.log("Service Worker error:", err));
+    });
+}
+</script>
+</body>
+</html>
